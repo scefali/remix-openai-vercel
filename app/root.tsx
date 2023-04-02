@@ -7,7 +7,10 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import 'flowbite';
+
 import stylesheet from "~/tailwind.css";
+
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
