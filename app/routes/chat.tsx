@@ -3,6 +3,8 @@ import { Await, Form, useLoaderData, useActionData } from "@remix-run/react";
 import { ActionArgs, json } from "@vercel/remix";
 import { defer } from "@vercel/remix";
 
+import { getCompletion } from "app/chat";
+
 export async function loader({ request }: ActionArgs) {
   const version = process.versions.node;
 
@@ -14,11 +16,12 @@ export async function loader({ request }: ActionArgs) {
 export async function action({ request }: ActionArgs) {
   const form = new URLSearchParams(await request.text());
   const userInput = form.get("userInput");
+  const response = await getCompletion(userInput || '');
 
-  return json({ response: `You typed ${userInput}` });
+  return json({ response });
 }
 
-function sleep(val, ms) {
+function sleep(val: string, ms: number) {
   return new Promise((resolve) => setTimeout(() => resolve(val), ms));
 }
 
