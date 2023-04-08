@@ -6,9 +6,14 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 export async function getCompletion(prompt: string) {
-  const response = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt,
-  });
+  const response = await openai.createCompletion(
+    {
+      model: "text-davinci-003",
+      prompt,
+    },
+    {
+      timeout: 10_000,
+    }
+  );
   return response.data.choices[0].text;
 }

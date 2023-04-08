@@ -11,6 +11,7 @@ import type { Message } from "app/types";
 import { getCompletion } from "app/chat";
 import { sessionId as sessionIdCookie } from "app/cookies";
 import { Chat } from "app/components/chat";
+import SubmitForm from 'app/components/submitForm';
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "Remix Open AI" }];
@@ -84,16 +85,7 @@ export default function App() {
     <div className="flex-auto w-full">
       <h1 className="">Remix Open AI</h1>
       <Chat messages={messages} />
-      <Form method="post" className="flex gap-4 max-width max-w-3xl	">
-        <Textarea
-          placeholder="Type in..."
-          name="userInput"
-          className="w-full"
-        />
-        <Button className="btn btn-blue" type="submit">
-          Send
-        </Button>
-      </Form>
+      <SubmitForm />
       {data && <p>{data.response}</p>}
     </div>
   );
