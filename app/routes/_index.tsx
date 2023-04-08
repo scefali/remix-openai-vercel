@@ -7,20 +7,33 @@ import { defer } from "@vercel/remix";
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
+import type { Message } from "app/types";
 import { getCompletion } from "app/chat";
 import { sessionId as sessionIdCookie } from "app/cookies";
-
-const prisma = new PrismaClient();
+import { Chat } from "app/components/chat";
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "Remix Open AI" }];
 };
 
-export async function loader({ request }: ActionArgs) {
-  return defer({});
+export async function loader({
+  request,
+}: ActionArgs): Promise<{ messages: Message[] }> {
+  const prisma = new PrismaClient();
+  const cookieHeader = request.headers.get("Cookie");
+  // async to get data from request
+  const sessionId = await sessionIdCookie.parse(cookieHeader);
+  if (sessionId && typeof sessionId === "string") {
+    const messages: Message[] = await prisma.message.findMany({
+      where: { sessionId },
+    });
+    return { messages };
+  }
+  return { messages: [] };
 }
 
 export async function action({ request }: ActionArgs) {
+  const prisma = new PrismaClient();
   const cookieHeader = request.headers.get("Cookie");
   // async to get data from request
   const [cookie, requestText] = await Promise.all([
@@ -64,10 +77,13 @@ export async function action({ request }: ActionArgs) {
 
 export default function App() {
   const data = useActionData<typeof action>();
+  const { messages } = useLoaderData<typeof loader>();
+  console.log({ messages });
 
   return (
     <div className="flex-auto w-full">
       <h1 className="">Remix Open AI</h1>
+      <Chat messages={messages} />
       <Form method="post" className="flex gap-4 max-width max-w-3xl	">
         <Textarea
           placeholder="Type in..."
