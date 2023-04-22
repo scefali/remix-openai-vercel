@@ -4,7 +4,6 @@ import { Await, Form, useLoaderData, useActionData } from "@remix-run/react";
 import { ActionArgs, json } from "@vercel/remix";
 import { Button, Textarea } from "flowbite-react";
 import { defer } from "@vercel/remix";
-import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
 import type { Message } from "app/types";
@@ -12,6 +11,7 @@ import { getCompletion } from "app/chat";
 import { sessionId as sessionIdCookie } from "app/cookies";
 import { Chat } from "app/components/chat";
 import SubmitForm from 'app/components/submitForm';
+import prisma from '~/db';
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "Remix Open AI" }];
@@ -20,7 +20,6 @@ export const meta: V2_MetaFunction = () => {
 export async function loader({
   request,
 }: ActionArgs): Promise<{ messages: Message[] }> {
-  const prisma = new PrismaClient();
   const cookieHeader = request.headers.get("Cookie");
   // async to get data from request
   const sessionId = await sessionIdCookie.parse(cookieHeader);
@@ -34,7 +33,6 @@ export async function loader({
 }
 
 export async function action({ request }: ActionArgs) {
-  const prisma = new PrismaClient();
   const cookieHeader = request.headers.get("Cookie");
   // async to get data from request
   const [cookie, requestText] = await Promise.all([

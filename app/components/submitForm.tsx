@@ -1,5 +1,5 @@
 import { Form } from "@remix-run/react";
-import { Button, Textarea } from "flowbite-react";
+import { Textarea } from "flowbite-react";
 import { BsSend } from "react-icons/bs";
 
 export default function SubmitForm() {

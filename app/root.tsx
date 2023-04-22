@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import 'flowbite';
+import { withSentry } from "@sentry/remix";
 
 import stylesheet from "~/tailwind.css";
 
@@ -16,7 +17,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
-export default function App() {
+function App() {
   return (
     <html lang="en">
       <head>
@@ -34,3 +35,5 @@ export default function App() {
     </html>
   );
 }
+
+export default withSentry(App);
