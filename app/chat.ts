@@ -15,5 +15,6 @@ export async function getCompletion(prompt: string) {
       timeout: 10_000,
     }
   );
+  console.log(response.data)
   return response.data.choices[0].text;
 }
