@@ -75,7 +75,6 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function App() {
-  const data = useActionData<typeof action>();
   const { messages } = useLoaderData<typeof loader>();
 
   const clearMessages = useCallback(() => {
@@ -83,7 +82,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex-auto w-full p-4">
+    <div className="flex-auto w-full p-4 pb-20">
       <Chat messages={messages} handleClear={clearMessages} />
       <SubmitForm />
     </div>
