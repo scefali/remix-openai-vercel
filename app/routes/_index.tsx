@@ -1,17 +1,17 @@
 import type { V2_MetaFunction } from "@vercel/remix";
-import { Suspense } from "react";
+import { Suspense, useState, useCallback } from "react";
 import { Await, Form, useLoaderData, useActionData } from "@remix-run/react";
 import { ActionArgs, json } from "@vercel/remix";
 import { Button, Textarea } from "flowbite-react";
 import { defer } from "@vercel/remix";
 import { v4 as uuidv4 } from "uuid";
 
-import type { Message } from "app/types";
+import type { Message, SerializedMessage } from "app/types";
 import { getCompletion } from "app/chat";
-import { sessionId as sessionIdCookie } from "app/cookies";
+import { sessionId as sessionIdCookie, clearSession } from "app/cookies";
 import { Chat } from "app/components/chat";
-import SubmitForm from 'app/components/submitForm';
-import prisma from '~/db';
+import SubmitForm from "app/components/submitForm";
+import prisma from "~/db";
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "Remix Open AI" }];
@@ -76,13 +76,20 @@ export async function action({ request }: ActionArgs) {
 
 export default function App() {
   const data = useActionData<typeof action>();
-  const { messages } = useLoaderData<typeof loader>();
-  console.log({ messages });
+  const { messages: rawMessages } = useLoaderData<typeof loader>();
+  const [messages, setMessages] = useState<SerializedMessage[]>(
+    rawMessages || []
+  );
+
+  const clearMessages = useCallback(() => {
+    clearSession();
+    setMessages([]);
+  }, [setMessages]);
 
   return (
     <div className="flex-auto w-full">
       <h1 className="">Remix Open AI</h1>
-      <Chat messages={messages} />
+      <Chat messages={messages} handleClear={clearMessages} />
       <SubmitForm />
       {data && <p>{data.response}</p>}
     </div>
