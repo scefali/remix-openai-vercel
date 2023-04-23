@@ -76,22 +76,16 @@ export async function action({ request }: ActionArgs) {
 
 export default function App() {
   const data = useActionData<typeof action>();
-  const { messages: rawMessages } = useLoaderData<typeof loader>();
-  const [messages, setMessages] = useState<SerializedMessage[]>(
-    rawMessages || []
-  );
+  const { messages } = useLoaderData<typeof loader>();
 
   const clearMessages = useCallback(() => {
     clearSession();
-    setMessages([]);
-  }, [setMessages]);
+  }, []);
 
   return (
-    <div className="flex-auto w-full">
-      <h1 className="">Remix Open AI</h1>
+    <div className="flex-auto w-full p-1	">
       <Chat messages={messages} handleClear={clearMessages} />
       <SubmitForm />
-      {data && <p>{data.response}</p>}
     </div>
   );
 }

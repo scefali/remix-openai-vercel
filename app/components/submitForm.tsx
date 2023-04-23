@@ -4,12 +4,13 @@ import { BsSend } from "react-icons/bs";
 
 export default function SubmitForm() {
   return (
-    <Form method="post" className="flex gap-4 max-width max-w-3xl	relative">
+    <Form method="post" className="flex gap-4 max-width max-w-3xl	relative mx-auto" >
       <Textarea
         placeholder="Type in..."
         name="userInput"
         className="w-full"
         style={{ minHeight: "50px" }}
+        defaultValue=""
       />
       <button className="absolute right-2 bottom-2" type="submit">
         <BsSend />
