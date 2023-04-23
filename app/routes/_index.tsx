@@ -83,7 +83,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex-auto w-full p-1	">
+    <div className="flex-auto w-full p-4">
       <Chat messages={messages} handleClear={clearMessages} />
       <SubmitForm />
     </div>

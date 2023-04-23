@@ -6,9 +6,13 @@ export default function SubmitForm() {
   return (
     <Form
       method="post"
-      className="flex gap-4 max-width absolute bottom-0	left-0 w-full"
+      className="flex gap-4 max-width fixed bottom-0 left-0 w-full bg-transparent bg-white	"
+      reloadDocument
+      // onSubmit={async (event) => {
+      //   debugger;
+      // }}
     >
-      <div className="p-4 mx-auto relative">
+      <div className="mx-auto relative p-4">
         <Textarea
           placeholder="Type in..."
           name="userInput"
