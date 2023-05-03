@@ -22,6 +22,7 @@ Sentry.init({
         useMatches
       ),
     }),
+    new Sentry.Replay(),
   ],
 });
 

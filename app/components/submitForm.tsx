@@ -8,6 +8,7 @@ export default function SubmitForm() {
       method="post"
       className="flex gap-4 max-width fixed bottom-0 left-0 w-full bg-transparent bg-white	"
       reloadDocument
+      action=""
       // onSubmit={async (event) => {
       //   debugger;
       // }}

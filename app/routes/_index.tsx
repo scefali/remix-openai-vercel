@@ -17,19 +17,23 @@ export const meta: V2_MetaFunction = () => {
   return [{ title: "Remix Open AI" }];
 };
 
-export async function loader({
-  request,
-}: ActionArgs): Promise<{ messages: Message[] }> {
+export async function loader({ request }: ActionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   // async to get data from request
-  const sessionId = await sessionIdCookie.parse(cookieHeader);
-  if (sessionId && typeof sessionId === "string") {
-    const messages: Message[] = await prisma.message.findMany({
+  const _sessionId = await sessionIdCookie.parse(cookieHeader);
+  const sessionId = _sessionId || uuidv4();
+  let messages: Message[] = [];
+  if (_sessionId) {
+    messages = await prisma.message.findMany({
       where: { sessionId },
     });
-    return { messages };
   }
-  return { messages: [] };
+  return new Response(JSON.stringify({ messages }), {
+    headers: {
+      "Set-Cookie": await sessionIdCookie.serialize(sessionId),
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export async function action({ request }: ActionArgs) {
@@ -44,7 +48,7 @@ export async function action({ request }: ActionArgs) {
   if (!userInput) {
     return json({ error: { message: "No input" } }, { status: 400 });
   }
-  console.log({ cookie });
+  // do we need to generate a default sessionId?
   const sessionId = cookie || uuidv4();
   const [_message, response] = await Promise.all([
     prisma.message.create({
@@ -66,7 +70,7 @@ export async function action({ request }: ActionArgs) {
   });
 
   // TODO: respond with all messages
-  return new Response(JSON.stringify({ response }), {
+  return new Response(JSON.stringify({ messages: ["test"] }), {
     headers: {
       "Set-Cookie": await sessionIdCookie.serialize(sessionId),
       "Content-Type": "application/json",
@@ -75,7 +79,8 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function App() {
-  const { messages } = useLoaderData<typeof loader>();
+  const { messages }: { messages: SerializedMessage[] } =
+    useLoaderData<typeof loader>();
 
   const clearMessages = useCallback(() => {
     clearSession();
