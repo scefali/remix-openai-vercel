@@ -1,9 +1,7 @@
 import type { V2_MetaFunction } from "@vercel/remix";
-import { Suspense, useState, useCallback } from "react";
-import { Await, Form, useLoaderData, useActionData } from "@remix-run/react";
+import { useCallback, useEffect, useState } from "react";
+import { useLoaderData, useNavigation } from "@remix-run/react";
 import { ActionArgs, json } from "@vercel/remix";
-import { Button, Textarea } from "flowbite-react";
-import { defer } from "@vercel/remix";
 import { v4 as uuidv4 } from "uuid";
 
 import type { Message, SerializedMessage } from "app/types";
@@ -50,7 +48,8 @@ export async function action({ request }: ActionArgs) {
   }
   // do we need to generate a default sessionId?
   const sessionId = cookie || uuidv4();
-  const [_message, response] = await Promise.all([
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [message, response] = await Promise.all([
     prisma.message.create({
       data: {
         text: userInput,
@@ -81,15 +80,37 @@ export async function action({ request }: ActionArgs) {
 export default function App() {
   const { messages }: { messages: SerializedMessage[] } =
     useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  const [localMessages, setLocalMessages] = useState(messages);
+
+  // add in the user input in an optimistic update
+  const userInput = navigation.formData?.get("userInput");
+  useEffect(() => {
+    if (userInput && typeof userInput === "string") {
+      setLocalMessages((prev) => [
+        ...prev,
+        {
+          text: userInput,
+          isBot: false,
+          id: -1,
+          sessionId: "",
+          createdAt: new Date().toDateString(),
+        },
+      ]);
+    }
+  }, [userInput]);
 
   const clearMessages = useCallback(() => {
     clearSession();
+    setLocalMessages([]);
   }, []);
+
+  const lockInput = navigation.state === "submitting"
 
   return (
     <div className="flex-auto w-full p-4 pb-20">
-      <Chat messages={messages} handleClear={clearMessages} />
-      <SubmitForm />
+      <Chat messages={localMessages} handleClear={clearMessages} />
+      <SubmitForm lockInput={lockInput} />
     </div>
   );
 }

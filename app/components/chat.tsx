@@ -17,7 +17,7 @@ export function Chat({ messages, handleClear }: Props) {
       <Form
         className="fixed w-full"
         method="post"
-        action=""
+        action="?index"
         onSubmit={() => handleClear()}
       >
         {messages.length > 0 ? (
