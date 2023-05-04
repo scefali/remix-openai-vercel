@@ -9,9 +9,7 @@ export default function SubmitForm() {
       className="flex gap-4 max-width fixed bottom-0 left-0 w-full bg-transparent bg-white	"
       reloadDocument
       action=""
-      // onSubmit={async (event) => {
-      //   debugger;
-      // }}
+      id="text-input-form"
     >
       <div className="mx-auto relative p-4">
         <Textarea
@@ -20,6 +18,12 @@ export default function SubmitForm() {
           className="w-full m-auto"
           style={{ minHeight: "50px", width: "48em" }}
           defaultValue=""
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              (e.target as any).form.submit();
+            }
+          }}
         />
         <button className="absolute right-6 bottom-6" type="submit">
           <BsSend />
